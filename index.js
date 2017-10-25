@@ -42,6 +42,10 @@ var corsOptions = {
 }
 app.use(cors(corsOptions)); 
 
+app.use(function(req,res,next){
+  console.log(new Date().toUTCString()+' '+req.originalUrl);
+  next();
+})
 //app.use(basicAuth({users: { 'admin': 'supersecret'}}));
 app.use('/api/*',expressJwt({
     secret: utils.getSecret,
@@ -50,6 +54,8 @@ app.use('/api/*',expressJwt({
 
     // }
 }).unless({ path: ['/api/v1/users/authenticate','/api/v1/users/register'] }));
+
+
 
 app.use(function (err, req, res, next) {
   // if (err.name === 'UnauthorizedError') {
