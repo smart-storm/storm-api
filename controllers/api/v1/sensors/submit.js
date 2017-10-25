@@ -8,7 +8,7 @@ module.exports = function(r){
   	r.post("/",function (req,res) { 
 
 
-	    var user=getUserFromToken(req);
+	    var user=utils.getUserFromToken(req);
 		var tmp=Object.assign({
 			user_id:user.id,
 			_id: new ObjectID() //TODO!!!!
@@ -22,7 +22,7 @@ module.exports = function(r){
 					res.sendStatus(500);
 				}
 				else
-					res.json(data);
+					res.status(200).json(data);
 				db.close();
 			});
 			

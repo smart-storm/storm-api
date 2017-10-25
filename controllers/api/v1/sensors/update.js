@@ -8,7 +8,7 @@ module.exports = function(r){
 	    // if(req.body.username=='admin' && req.body.password=='asd') 
 
 
-	    var user=getUserFromToken(req);
+	    var user=utils.getUserFromToken(req);
 
 	    var copy=Object.assign({},req.body);
 		delete copy._$visited;

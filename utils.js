@@ -44,4 +44,5 @@ module.exports={
 	getSecret:getSecret,
 	getDbConnection:getDbConnection,
 	generateToken:generateToken,
+	getUserFromToken:getUserFromToken
 }

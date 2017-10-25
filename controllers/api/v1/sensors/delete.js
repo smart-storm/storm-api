@@ -5,7 +5,7 @@ var	ObjectID = require('mongodb').ObjectID;
 module.exports = function(r){
   	r.post("/",function (req,res) { 
 
-	    var user=getUserFromToken(req);
+	    var user=utils.getUserFromToken(req);
 
 
 		var _check=Object.assign({},req.body);
