@@ -30,9 +30,17 @@ app = module.exports = express();
 app.use(kraken(options));
 
 
-app.use(cors({ 
-  origin:'http://localhost:4300' 
-})); 
+var whitelist = ['http://localhost:4300', 'http://alfa.smartstorm.io']
+var corsOptions = {
+  origin: function (origin, callback) {
+    if (whitelist.indexOf(origin) !== -1) {
+      callback(null, true)
+    } else {
+      callback(new Error('Not allowed by CORS'))
+    }
+  }
+}
+app.use(cors(corsOptions)); 
 
 //app.use(basicAuth({users: { 'admin': 'supersecret'}}));
 app.use('/api/*',expressJwt({
@@ -41,7 +49,7 @@ app.use('/api/*',expressJwt({
     // isRevoked: function(req,payload,done){
 
     // }
-}).unless({ path: ['/api/users/authenticate','/api/users/register'] }));
+}).unless({ path: ['/api/v1/users/authenticate','/api/v1/users/register'] }));
 
 app.use(function (err, req, res, next) {
   // if (err.name === 'UnauthorizedError') {
