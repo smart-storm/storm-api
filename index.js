@@ -63,7 +63,10 @@ app.use(function (err, req, res, next) {
   //   res.sendStatus(401);
   // }
   console.log(req.ip+' - ['+new Date().toUTCString()+'] '+err.name+' - '+req.headers.host+' - "'+req.method+' '+req.originalUrl+'" - "'+ req.headers["user-agent"]+'"');
-  res.sendStatus(err.status);
+  if(err.status!==undefined)
+    res.sendStatus(err.status);
+  else
+    res.sendStatus(500);
 });
 
 
