@@ -2,7 +2,17 @@
     
 
     "middleware": {
-        
+        "appsec": {
+            "module": {
+                "arguments": [
+                    {
+                        "xframe": "SAMEORIGIN",
+                        "p3p": false,
+                        "csp": false
+                    }
+                ]
+            }
+        },
         "devtools": {
             "enabled": true,
             "priority": 35,
