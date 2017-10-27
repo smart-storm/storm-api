@@ -41,7 +41,8 @@ var corsOptions = {
     }
   }
 }
-app.use(cors(corsOptions)); 
+app.use('/api/v1/users',cors(corsOptions));
+app.use('/api/v1/sensors',cors(corsOptions)); 
 
 app.use(function(req,res,next){
   console.log(new Date().toUTCString()+' '+req.originalUrl);
@@ -54,7 +55,7 @@ app.use('/api/*',expressJwt({
     // isRevoked: function(req,payload,done){
 
     // }
-}).unless({ path: ['/api/v1/users/authenticate','/api/v1/users/register'] }));
+}).unless({ path: ['/api/v1/users/authenticate','/api/v1/users/register','/api/v1/measure' ] }));
 
 
 
@@ -63,7 +64,10 @@ app.use(function (err, req, res, next) {
   //   // res.status(401).send('invalid token...');
   //   res.sendStatus(401);
   // }
-  console.log(req.ip+' - ['+new Date().toUTCString()+'] '+err.name+' - '+req.headers.host+' - "'+req.method+' '+req.originalUrl+'" - "'+ req.headers["user-agent"]+'"');
+  console.log(req.ip+' - ['+new Date().toUTCString()+'] '+err.name+' - '+
+    req.headers.host+' - "'+req.method+' '+req.originalUrl+'" - "'+ 
+    req.headers["user-agent"]+'"');
+
   if(err.status!==undefined)
     res.sendStatus(err.status);
   else
