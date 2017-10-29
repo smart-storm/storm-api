@@ -48,7 +48,7 @@ app.use(function(req,res,next){
   console.log(new Date().toUTCString()+' '+req.originalUrl);
   next();
 })
-//app.use(basicAuth({users: { 'admin': 'supersecret'}}));
+
 app.use('/api/*',expressJwt({
     secret: utils.getSecret,
     getToken: utils.getToken,
