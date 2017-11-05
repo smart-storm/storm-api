@@ -10,6 +10,7 @@ var kafka = require('kafka-node');
 var HighLevelProducer = kafka.HighLevelProducer;
 var KeyedMessage = kafka.KeyedMessage;
 var Client = kafka.Client;
+var	ObjectID = require('mongodb').ObjectID;
 
 
 module.exports = function (router) {
@@ -122,7 +123,7 @@ module.exports = function (router) {
     function getSensorId (userId, sensorId){
         return new Promise(function(resolve, reject) {
             var db = utils.getDbConnection().then((db) => {
-                    db.collection('sensors').findOne({"user_id": userId.toString(), "_id":sensorId.toString()},
+                    db.collection('sensors').findOne({"user_id": userId.toString(), "_id":ObjectID.createFromHexString(sensorId.toString())},
                     function (err, document) {
                         if (err) {
                             res.sendStatus(500);
