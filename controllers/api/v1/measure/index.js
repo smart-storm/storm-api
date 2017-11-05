@@ -44,9 +44,9 @@ module.exports = function (router) {
                 )
             },
 
-            function(arg1, callback){
-                console.log(arg1._id)
-                getSensorId(arg1._id).then(function (results) {
+            function(userDocument, callback){
+                console.log(userDocument._id)
+                getSensorId(userDocument._id, req.body.sensor_id).then(function (results) {
                     if(results) {
                         callback(null, results)
                     }else{
@@ -56,9 +56,9 @@ module.exports = function (router) {
             },
 
             //send to kafka queue
-            function(arg1, callback){
-                var sensorId = arg1._id.toString()
-                var userId = arg1.user_id.toString()
+            function(sensorDocument, callback){
+                var sensorId = sensorDocument._id.toString()
+                var userId = sensorDocument.user_id.toString()
                 var value = req.body.measure_value.toString()
                 var currentData = new Date().toLocaleString();
                 //
@@ -119,18 +119,18 @@ module.exports = function (router) {
         })})};
 
 
-    function getSensorId (userId){
+    function getSensorId (userId, sensorId){
         return new Promise(function(resolve, reject) {
             var db = utils.getDbConnection().then((db) => {
-                    db.collection('sensors').findOne({"user_id": userId.toString()}, function (err, document) {
-                    if (err) {
-                        res.sendStatus(500);
-                    }
+                    db.collection('sensors').findOne({"user_id": userId.toString(), "_id":sensorId.toString()},
+                    function (err, document) {
+                        if (err) {
+                            res.sendStatus(500);
+                        }
 
-                    if (document) {
-                        resolve(document)
-                    }
-
+                        if (document) {
+                            resolve(document)
+                        }
                 })
         })})};
 
