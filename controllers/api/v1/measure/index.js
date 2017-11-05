@@ -130,6 +130,8 @@ module.exports = function (router) {
 
                         if (document) {
                             resolve(document)
+                        }else{
+                            resolve(null)
                         }
                 })
         })})};
