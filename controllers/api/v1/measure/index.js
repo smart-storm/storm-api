@@ -75,7 +75,7 @@ module.exports = function (router) {
                         }),
                     producer = new HighLevelProducer(client),
                     payloads = [
-                        { topic: 'measures-elastic', messages: JSON.stringify(objectToSend), partition: 0 }
+                        { topic: 'smart_msq', messages: JSON.stringify(objectToSend), partition: 0 }
                     ];
 
                 producer.on('ready', function () {
