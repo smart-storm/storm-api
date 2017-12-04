@@ -25,7 +25,7 @@ var fetchData = function(socket, user, lastTimes){
                     });
                     console.log("szukam: " + sensorid + "   " + user.id);
 
-                    if(false){
+                    if(true){ //testing condition purpose
                         if(!lastTimes[0]) promises.push(client.execute("SELECT * FROM sensors WHERE sensorid=? AND userid=? AND created_epoch>?", [sensorid, user.id, 15], { prepare : true }));
                         else promises.push(client.execute("SELECT * FROM sensors WHERE sensorid=? AND userid=? AND created_epoch>?", [sensorid, user.id, lastTimes[0][0][i]], { prepare : true }));
                     } else {
