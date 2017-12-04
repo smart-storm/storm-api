@@ -11,7 +11,7 @@ var fetchData = function(socket, user, lastTimes){
             }
             else {
 
-                if(lastTimes[0]) console.log(lastTimes[0][0][0]);
+                // if(lastTimes[0]) console.log(lastTimes[0][0][0]);
 
                 var sensorsInfo = [];
                 var client = utils.getCassandraConnection();
@@ -25,9 +25,12 @@ var fetchData = function(socket, user, lastTimes){
                     });
                     console.log("szukam: " + sensorid + "   " + user.id);
 
-                    if(true){ //testing condition purpose
-                        if(!lastTimes[0]) promises.push(client.execute("SELECT * FROM sensors WHERE sensorid=? AND userid=? AND created_epoch>?", [sensorid, user.id, 15], { prepare : true }));
-                        else promises.push(client.execute("SELECT * FROM sensors WHERE sensorid=? AND userid=? AND created_epoch>?", [sensorid, user.id, lastTimes[0][0][i]], { prepare : true }));
+                    if(false){ //testing condition purpose
+                        // need to implement refresh mechanism in agnular2 to use commented lines
+                        // if(!lastTimes[0]) promises.push(client.execute("SELECT * FROM sensors WHERE sensorid=? AND userid=? AND created_epoch>?", [sensorid, user.id, 15], { prepare : true }));
+                        // else promises.push(client.execute("SELECT * FROM sensors WHERE sensorid=? AND userid=? AND created_epoch>?", [sensorid, user.id, lastTimes[0][0][i]], { prepare : true }));
+                        if(!lastTimes[0]) promises.push(client.execute("SELECT * FROM sensors WHERE sensorid=? AND userid=?", [sensorid, user.id], { prepare : true }));
+                        else promises.push(client.execute("SELECT * FROM sensors WHERE sensorid=? AND userid=?", [sensorid, user.id], { prepare : true }));
                     } else {
                         promises.push(client.execute("SELECT * FROM sensors"));
                     }
