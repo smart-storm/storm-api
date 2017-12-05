@@ -29,11 +29,9 @@ options = {
 app = module.exports = express();
 app.use(kraken(options));
 
-
 var whitelist = ['http://localhost:4300', 'http://alfa.smartstorm.io']
 var corsOptions = {
   origin: function (origin, callback) {
-    console.log(origin);
     if (whitelist.indexOf(origin) !== -1) {
       callback(null, true)
     } else {
@@ -55,7 +53,7 @@ app.use('/api/*',expressJwt({
     // isRevoked: function(req,payload,done){
 
     // }
-}).unless({ path: ['/api/v1/users/authenticate','/api/v1/users/register','/api/v1/measure' ] }));
+}).unless({ path: ['/api/v1/users/authenticate','/api/v1/users/register','/api/v1/measure', '/api/v1/sensors/data/byUser' ] }));
 
 
 
