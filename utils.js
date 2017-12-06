@@ -8,9 +8,11 @@ var secret='SUPER_SECRET';
 var cassandra = require('cassandra-driver');
 var async = require('async');
 
-var cassandraClient =  new cassandra.Client({contactPoints: ['127.0.0.1'], keyspace: 'smartstorm',	protocolOptions: {
-    port: 9043 //only for testing
-}});
+var cassandraClient =  new cassandra.Client({contactPoints: ['127.0.0.1'], keyspace: 'smartstorm'
+//     protocolOptions: {
+//     port: 9043 //only for testing
+// }
+});
 
 getSecret=function(req,payload,done){
 	if(done)
@@ -29,8 +31,13 @@ getToken=function (req) {
     };
 
 getUserFromToken=function(req, token){
-	var token = token || getToken(req);
-	return jwt.verify(token,getSecret({},{})); //PROMISE!!!
+    var token = token || getToken(req);
+    try {
+        return jwt.verify(token,getSecret({},{}));
+    } catch(err){
+        // console.log(err);
+        return false;
+    }
 };
 
 getDbConnection=function(){
