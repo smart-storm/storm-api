@@ -16,6 +16,8 @@ module.exports = function(r){
 		var _check=Object.assign({},req.body);
 		delete _check.name;
 		delete _check.display_chart;
+		delete _check.latitude;
+		delete _check.longitude;
 		delete _check._$visited;
 
 		if(_check.user_id==user.id){ 
