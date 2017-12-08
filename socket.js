@@ -28,7 +28,7 @@ var fetchData = function(socket, user, lastTimes){
                         sensor_id: sensorid,
                         sensor_name: sensorname
                     });
-                    if(true){ //testing condition purpose
+                    if(false){ //testing condition purpose
                         if(!lastTimes[0]) promises.push(client.execute("SELECT * FROM sensors WHERE sensorid=? AND userid=? AND created_epoch>?", [sensorid, user.id, 0], { prepare : true }));
                         else promises.push(client.execute("SELECT * FROM sensors WHERE sensorid=? AND userid=? AND created_epoch>?", [sensorid, user.id, lastTimes[0][i]], { prepare : true }));
                     } else {
@@ -41,7 +41,6 @@ var fetchData = function(socket, user, lastTimes){
                     for(var i=0; i < results.length; i++){
                         results[i].information = sensorsInfo[i];
                         if(results[i].rowLength > 0) lastTime.push(results[i].rows[0].created_epoch);
-                        else lastTime.push(0);
                     }
                     lastTimes.push(lastTime);
                     socket.emit("chartsdata", results);
