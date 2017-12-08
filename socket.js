@@ -29,20 +29,27 @@ var fetchData = function(socket, user, lastTimes){
                         sensor_name: sensorname
                     });
                     if(true){ //testing condition purpose
-                        if(!lastTimes[0]) promises.push(client.execute("SELECT * FROM sensors WHERE sensorid=? AND userid=? AND created_epoch>?", [sensorid, user.id, 0], { prepare : true }));
-                        else promises.push(client.execute("SELECT * FROM sensors WHERE sensorid=? AND userid=? AND created_epoch>?", [sensorid, user.id, lastTimes[0][i]], { prepare : true }));
+                        if(lastTimes[0]){
+                            if(lastTimes[0][i]) {
+                                promises.push(client.execute("SELECT * FROM sensors WHERE sensorid=? AND userid=? AND created_epoch>?", [sensorid, user.id, lastTimes[0][i]], { prepare : true }));
+                            } else promises.push(client.execute("SELECT * FROM sensors WHERE sensorid=? AND userid=? AND created_epoch>?", [sensorid, user.id, 0], { prepare : true }));
+                        } else promises.push(client.execute("SELECT * FROM sensors WHERE sensorid=? AND userid=? AND created_epoch>?", [sensorid, user.id, 0], { prepare : true }));
                     } else {
                         promises.push(client.execute("SELECT * FROM sensors"));
                     }
                 }
                 Promise.all(promises).then((results) => {
                     var lastTime = [];
-                    lastTimes.length = 0;
                     for(var i=0; i < results.length; i++){
                         results[i].information = sensorsInfo[i];
                         if(results[i].rowLength > 0) lastTime.push(results[i].rows[0].created_epoch);
-                        else lastTime.push(0);
+                        else if(lastTimes[0]){
+                            if(lastTimes[0][i]){
+                                lastTime.push(lastTimes[0][i]);
+                            } else lastTime.push(0);
+                        } else lastTime.push(0);
                     }
+                    lastTimes.length = 0;
                     lastTimes.push(lastTime);
                     socket.emit("chartsdata", results);
                 }).catch((err) => {
