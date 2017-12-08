@@ -1,18 +1,23 @@
 var utils = require('./utils');
 
-var socket_interval = 10000;
+var socket_interval = 30000;
+var refreshIntervalId = null;
 
 var fetchData = function(socket, user, lastTimes){
-    utils.getDbConnection().then((db)=>{
 
+    console.log(lastTimes);
+
+    utils.getDbConnection().then((db)=>{
         db.collection('sensors').find({user_id:user.id, display_chart:true}).toArray((err,data)=>{
             if(err) {
                 console.log('Error getting sensor list:'+err);
+                socket.emit('error_msg', {
+                    body: "Error getting sensor list, try again later"
+                });
+                socket.disconnect();
+                clearInterval(refreshIntervalId);
             }
             else {
-
-                // if(lastTimes[0]) console.log(lastTimes[0][0][0]);
-
                 var sensorsInfo = [];
                 var client = utils.getCassandraConnection();
                 var promises = [];
@@ -23,20 +28,13 @@ var fetchData = function(socket, user, lastTimes){
                         sensor_id: sensorid,
                         sensor_name: sensorname
                     });
-                    console.log("szukam: " + sensorid + "   " + user.id);
-
                     if(true){ //testing condition purpose
-                        // need to implement refresh mechanism in agnular2 to use commented lines
-                        // if(!lastTimes[0]) promises.push(client.execute("SELECT * FROM sensors WHERE sensorid=? AND userid=? AND created_epoch>?", [sensorid, user.id, 15], { prepare : true }));
-                        // else promises.push(client.execute("SELECT * FROM sensors WHERE sensorid=? AND userid=? AND created_epoch>?", [sensorid, user.id, lastTimes[0][0][i]], { prepare : true }));
-                        if(!lastTimes[0]) promises.push(client.execute("SELECT * FROM sensors WHERE sensorid=? AND userid=?", [sensorid, user.id], { prepare : true }));
-                        else promises.push(client.execute("SELECT * FROM sensors WHERE sensorid=? AND userid=?", [sensorid, user.id], { prepare : true }));
+                        if(!lastTimes[0]) promises.push(client.execute("SELECT * FROM sensors WHERE sensorid=? AND userid=? AND created_epoch>?", [sensorid, user.id, 0], { prepare : true }));
+                        else promises.push(client.execute("SELECT * FROM sensors WHERE sensorid=? AND userid=? AND created_epoch>?", [sensorid, user.id, lastTimes[0][i]], { prepare : true }));
                     } else {
                         promises.push(client.execute("SELECT * FROM sensors"));
                     }
-
                 }
-
                 Promise.all(promises).then((results) => {
                     var lastTime = [];
                     lastTimes.length = 0;
@@ -45,10 +43,15 @@ var fetchData = function(socket, user, lastTimes){
                         if(results[i].rowLength > 0) lastTime.push(results[i].rows[0].created_epoch);
                         else lastTime.push(0);
                     }
-                    lastTimes.push([lastTime]);
+                    lastTimes.push(lastTime);
                     socket.emit("chartsdata", results);
+                }).catch((err) => {
+                    socket.emit('error_msg', {
+                        body: "Cassandra connection error, try again later"
+                    });
+                    socket.disconnect();
+                    clearInterval(refreshIntervalId);
                 });
-
             }
             db.close();
         });
@@ -65,40 +68,27 @@ module.exports.listen = function(socket) {
     try {
         var user = utils.getUserFromToken(null, token);
         if(!user){
-            // socket.emit('error', 'jwterror');
+            socket.emit('error_msg', {
+                body: "User not found, or token expired"
+            });
             socket.disconnect();
         }
     } catch(err) {
-        // socket.emit('error', err);
+        socket.emit('error', err);
         socket.disconnect();
     }
 
-    var lastRecordTimes = []
+    var lastRecordTimes = [];
 
     fetchData(socket, user, lastRecordTimes);
-    setInterval(function () {
+    refreshIntervalId = setInterval(function () {
        fetchData(socket, user, lastRecordTimes);
     }, socket_interval);
 
-
-
-
-    // var last_record_time = null;
-    //
-    // utils.getCassandraConnection().execute("SELECT * FROM sensors_view WHERE userid=? AND sensorid=?", [user.id, "sensor"]).then( (res) => {
-    //     socket.emit("chartsdata", res);
-    //     last_record_time = 0;
-    // });
-
-    socket.on('message', function(msg){
-            console.log('message: ' + msg);
+    socket.on('disconnect', function() {
+        clearInterval(refreshIntervalId);
     });
 
-    // setInterval(function(){
-    //     utils.getCassandraConnection().execute("SELECT * FROM sensors_view").then( (res) => {
-    //         socket.emit("chartsdata", res);
-    //     });
-    // },socket_interval);
 
     return socket;
 };
