@@ -49,6 +49,7 @@ module.exports = function(r){
 		 			
 		 		}else{
 		 			res.sendStatus(400);
+		 			db.close();
 		 		}
 		 	});
 
