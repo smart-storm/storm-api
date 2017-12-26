@@ -16,6 +16,7 @@ var fetchData = function(socket, user, lastTimes){
                 });
                 socket.disconnect();
                 clearInterval(refreshIntervalId);
+                db.close();
             }
             else {
                 var sensorsInfo = [];
@@ -52,12 +53,14 @@ var fetchData = function(socket, user, lastTimes){
                     lastTimes.length = 0;
                     lastTimes.push(lastTime);
                     socket.emit("chartsdata", results);
+                    db.close();
                 }).catch((err) => {
                     socket.emit('error_msg', {
                         body: "Cassandra connection error, try again later"
                     });
                     socket.disconnect();
                     clearInterval(refreshIntervalId);
+                    db.close();
                 });
             }
             db.close();
