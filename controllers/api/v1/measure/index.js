@@ -117,7 +117,9 @@ module.exports = function (router) {
                     }
 
                 })
-        })})};
+        }).catch((err) => {
+                console.log('Error connecting to: db');
+            })})};
 
 
     function getSensorId (userId, sensorId){
@@ -135,7 +137,9 @@ module.exports = function (router) {
                             resolve(null)
                         }
                 })
-        })})};
+        }).catch((err)=> {
+                console.log('Error connecting to: db');
+            })})};
 
 
 };
