@@ -29,18 +29,18 @@ options = {
 app = module.exports = express();
 app.use(kraken(options));
 
-var whitelist = ['http://localhost:4300', 'http://alfa.smartstorm.io']
-var corsOptions = {
-  origin: function (origin, callback) {
-    if (whitelist.indexOf(origin) !== -1) {
-      callback(null, true)
-    } else {
-      callback(new Error('Not allowed by CORS'))
-    }
-  }
-}
-app.use('/api/v1/users',cors(corsOptions));
-app.use('/api/v1/sensors',cors(corsOptions)); 
+// var whitelist = ['http://localhost:4300', 'http://alfa.smartstorm.io']
+// var corsOptions = {
+//   origin: function (origin, callback) {
+//     if (whitelist.indexOf(origin) !== -1) {
+//       callback(null, true)
+//     } else {
+//       callback(new Error('Not allowed by CORS'))
+//     }
+//   }
+// }
+// app.use('/api/v1/users',cors(corsOptions));
+// app.use('/api/v1/sensors',cors(corsOptions));
 
 app.use(function(req,res,next){
   console.log(new Date().toUTCString()+' '+req.originalUrl);
