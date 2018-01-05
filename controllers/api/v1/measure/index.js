@@ -115,6 +115,7 @@ module.exports = function (router) {
                     }else{
                         resolve(null)
                     }
+                    db.close();
 
                 })
         }).catch((err) => {
@@ -136,7 +137,8 @@ module.exports = function (router) {
                         }else{
                             resolve(null)
                         }
-                })
+                        db.close();
+                    })
         }).catch((err)=> {
                 console.log('Error connecting to: db');
             })})};
