@@ -2,7 +2,7 @@
 //  * Created by MD on 17/10/17. 
 //  */ 
 
-var utils=require('../../../utils');
+var utils=require('../../../../utils');
 var bcrypt = require('bcryptjs');
 
 
@@ -49,6 +49,7 @@ module.exports = function(r){
 		 			
 		 		}else{
 		 			res.sendStatus(400);
+		 			db.close();
 		 		}
 		 	});
 
