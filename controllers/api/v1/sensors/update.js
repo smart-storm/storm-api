@@ -1,5 +1,5 @@
 
-var utils=require('../../../utils');
+var utils=require('../../../../utils');
 var	ObjectID = require('mongodb').ObjectID;
 
 module.exports = function(r){
@@ -8,13 +8,16 @@ module.exports = function(r){
 	    // if(req.body.username=='admin' && req.body.password=='asd') 
 
 
-	    var user=getUserFromToken(req);
+	    var user=utils.getUserFromToken(req);
 
 	    var copy=Object.assign({},req.body);
 		delete copy._$visited;
 		
 		var _check=Object.assign({},req.body);
 		delete _check.name;
+		delete _check.display_chart;
+		delete _check.latitude;
+		delete _check.longitude;
 		delete _check._$visited;
 
 		if(_check.user_id==user.id){ 

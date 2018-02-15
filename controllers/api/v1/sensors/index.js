@@ -1,8 +1,9 @@
-var utils=require('../../../utils');
+
+var utils=require('../../../../utils');
 
 module.exports = function(r){
-  r.get("/",function (req,res) { 
-        var user=getUserFromToken(req);
+  r.post("/",function (req,res) { 
+        var user=utils.getUserFromToken(req);
 		var db=utils.getDbConnection().then((db)=>{
 			
 			db.collection('sensors').find({user_id:user.id}).toArray((err,data)=>{

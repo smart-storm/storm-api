@@ -29,27 +29,47 @@ options = {
 app = module.exports = express();
 app.use(kraken(options));
 
+// var whitelist = ['http://localhost:4300', 'http://alfa.smartstorm.io']
+// var corsOptions = {
+//   origin: function (origin, callback) {
+//     if (whitelist.indexOf(origin) !== -1) {
+//       callback(null, true)
+//     } else {
+//       callback(new Error('Not allowed by CORS'))
+//     }
+//   }
+// }
+// app.use('/api/v1/users',cors(corsOptions));
+// app.use('/api/v1/sensors',cors(corsOptions));
 
-app.use(cors({ 
-  origin:'http://localhost:4300' 
-})); 
+app.use(function(req,res,next){
+  console.log(new Date().toUTCString()+' '+req.originalUrl);
+  next();
+})
 
-//app.use(basicAuth({users: { 'admin': 'supersecret'}}));
 app.use('/api/*',expressJwt({
     secret: utils.getSecret,
     getToken: utils.getToken,
     // isRevoked: function(req,payload,done){
 
     // }
-}).unless({ path: ['/api/users/authenticate','/api/users/register'] }));
+}).unless({ path: ['/api/v1/users/authenticate','/api/v1/users/register','/api/v1/measure', '/api/v1/sensors/data/byUser' ] }));
+
+
 
 app.use(function (err, req, res, next) {
   // if (err.name === 'UnauthorizedError') {
   //   // res.status(401).send('invalid token...');
   //   res.sendStatus(401);
   // }
-  console.log(req.ip+' - ['+new Date().toUTCString()+'] '+err.name+' - '+req.headers.host+' - "'+req.method+' '+req.originalUrl+'" - "'+ req.headers["user-agent"]+'"');
-  res.sendStatus(err.status);
+  console.log(req.ip+' - ['+new Date().toUTCString()+'] '+err.name+' - '+
+    req.headers.host+' - "'+req.method+' '+req.originalUrl+'" - "'+ 
+    req.headers["user-agent"]+'"');
+
+  if(err.status!==undefined)
+    res.sendStatus(err.status);
+  else
+    res.sendStatus(500);
 });
 
 

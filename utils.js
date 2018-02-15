@@ -5,6 +5,15 @@ var MongoClient = require('mongodb').MongoClient;
 var url = "mongodb://localhost:27017/storm-db";
 var secret='SUPER_SECRET';
 
+var cassandra = require('cassandra-driver');
+var async = require('async');
+
+var cassandraClient =  new cassandra.Client({contactPoints: ['127.0.0.1'], keyspace: 'smartstorm'
+//     protocolOptions: {
+//     port: 9043 //only for testing
+// }
+});
+
 getSecret=function(req,payload,done){
 	if(done)
 		done(null,secret);
@@ -21,27 +30,38 @@ getToken=function (req) {
         return null;
     };
 
-getUserFromToken=function(req){
-	var token=getToken(req);
-	return jwt.verify(token,getSecret({},{})); //PROMISE!!!
-}
+getUserFromToken=function(req, token){
+    var token = token || getToken(req);
+    try {
+        return jwt.verify(token,getSecret({},{}));
+    } catch(err){
+        // console.log(err);
+        return false;
+    }
+};
 
 getDbConnection=function(){
 	return MongoClient.connect(url);
-}
+};
+
+getCassandraConnection=function () {
+	return cassandraClient;
+};
 
 generateToken=function(user){
 	return jwt.sign({
         sub: user.email,
         id: user._id,
     }, secret, {
-        expiresIn:  15*60
+        expiresIn:  3*60*60
     });
-}
+};
 
 module.exports={
 	getToken:getToken,
 	getSecret:getSecret,
 	getDbConnection:getDbConnection,
+    getCassandraConnection:getCassandraConnection,
 	generateToken:generateToken,
+	getUserFromToken:getUserFromToken
 }
