@@ -98,6 +98,102 @@ module.exports = function (router) {
             )
     });
 
+/// ZMIANY
+    
+    router.get('/', function (req, res) {
+                
+        if (typeof req.body.user_id === 'undefined' || typeof req.body.sensor_id === 'undefined' ||
+            typeof req.body.offset === 'undefined') {
+            res.status(400).send('One of the required fields is missing - user_id, sensor_id, offset');
+        }
+
+        async.waterfall([
+
+            function(callback){
+                getUserId(req.body.user_id).then(
+                    function (results) {
+                        if(results) {
+                            callback(null, results);
+                        }else{
+                            res.sendStatus(404);
+                        }
+                     }
+                                                          )
+              },
+
+             /* sensor validation possibly not needed
+             function(userDocument, callback){
+             console.log(userDocument._id)
+             getSensorId(userDocument._id, req.body.sensor_id).then(function (results) {
+                 if(results) {
+                    callback(null, results)
+                 }else{
+                    res.sendStatus(404);
+                 }
+             })
+             },
+             */
+
+             // Get Measurements
+
+             function(userDocument, callback){
+                getMeasurements(userDocument._id, req.body.sensor_id, req.body.offset).then(function (results) {
+                    if(results) {
+                        callback(null, results)
+                    }else{
+                        res.sendStatus(404);
+                    }
+                })
+             },
+
+             // send Measurements
+
+             function(measurements, callback){
+                if(measurements){
+                    var currentDate = new Date().toLocaleString();
+                    var objectToSend = {"measurements" : measurements, "requestDate" : currentDate}
+
+                    res.contentType('application/json')
+                    res.status(200).send(JSON.stringify(objectToSend));
+                 }
+                 else{
+                    res.status(400).send("Error occurred while querying the measurements");
+                 }
+
+             }],
+
+            function(err, results){
+                res.sendStatus(200);
+            }
+            )
+    });
+  
+    // find all measurements with given sensorId, userId and created_epoch greater than or equal to given offset (sorted by created_epochs ascending)
+    
+    function getMeasurements(userId, sensorId, offset){
+        return new Promise(function(resolve, reject) {                   
+            var db = utils.getDbConnection().then((db) => {
+                var mySort = { "created_epoch" : 1 };
+                db.collection('sensors').find({"user_id": userId.toString(), "_id":ObjectID.createFromHexString(sensorId.toString()), "created_epoch" : {$gte: offset} }).sort(mySort).toArray(function (err, document) {
+                    if (err) {
+                        res.sendStatus(500);
+                    }
+                    if (document) {
+                        resolve(document)
+                    }else{
+                        resolve(null)
+                    }
+                    db.close();
+                })
+            }).catch((err) => {
+                console.log('Error connecting to: db');
+            })
+        })
+    };
+    
+    
+/// KONIEC ZMIAN
+    
 
 
     function getUserId (email){
