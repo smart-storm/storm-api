@@ -183,14 +183,18 @@ module.exports = function (router) {
     function getMeasurements(userId, sensorId, offset){
         return new Promise(function(resolve, reject) {                   
             var db = utils.getDbConnection().then((db) => {
-                var mySort = { "created_epoch" : 1 };
-                db.collection('sensors').find({"user_id": userId.toString(), "_id":ObjectID.createFromHexString(sensorId.toString()), "created_epoch" : {$gte: offset} }).sort(mySort).toArray(function (err, document) {
+                // var mySort = { "created_epoch" : 1 };
+                // , "created_epoch" : {$gte: offset}
+                console.log('Query params: ', userId.toString(), ' , ', ObjectID.createFromHexString(sensorId.toString()));
+                db.collection('sensors').find({"user_id": userId.toString(), "_id":ObjectID.createFromHexString(sensorId.toString())}).toArray(function (err, document) {
                     if (err) {
                         res.sendStatus(500);
                     }
                     if (document) {
+                        console.log('Document found');
                         resolve(document)
                     }else{
+                        console.log('Document not found');
                         resolve(null)
                     }
                     db.close();
