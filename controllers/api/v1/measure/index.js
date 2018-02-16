@@ -102,18 +102,15 @@ module.exports = function (router) {
     
     router.get('/', function (req, res) {
         
-        console.log('user_id: ', req.get('user_id'));
-        console.log('sensor_id: ', req.get('sensor_id'));
-        console.log('offset: ', req.get('offset'));
-        
-        console.log('user_id header: ', req.header('user_id'));
-        console.log('sensor_id header: ', req.header('sensor_id'));
-        console.log('offset header: ', req.header('offset'));
         
         console.log('user_id param; ', req.query.user_id);
         console.log('sensor_id param: ', req.query.sensor_id);
         console.log('offset param: ', req.query.offset);
-                    
+          
+        console.log('typeof user_id param: ', typeof req.query.user_id);
+        console.log('typeof sensor_id param: ', typeof req.query.sensor_id);
+        console.log('typeof offset param: ', typeof req.query.offset);
+        
         /*if (typeof req.get('user_id') === 'undefined' || typeof req.get('sensor_id') === 'undefined' ||
             typeof req.get('offset') === 'undefined') {
             res.status(400).send('One of the required fields is missing: user_id, sensor_id, offset');
@@ -122,7 +119,7 @@ module.exports = function (router) {
         async.waterfall([
 
             function(callback){
-                getUserId(req.get('user_id')).then(
+                getUserId(req.query.user_id).then(
                     function (results) {
                         if(results) {
                             callback(null, results);
@@ -149,7 +146,8 @@ module.exports = function (router) {
              // Get Measurements
 
              function(userDocument, callback){
-                getMeasurements(userDocument._id, req.get('sensor_id'), req.get('offset')).then(function (results) {
+                getMeasurements(userDocument._id, req.query.sensor_id, req.query.offset).then(function (results) {
+                    console.log('UserDocumentId: ',userDocument._id);
                     if(results) {
                         callback(null, results)
                     }else{
@@ -164,7 +162,7 @@ module.exports = function (router) {
                 if(measurements){
                     var currentDate = new Date().toLocaleString();
                     var objectToSend = {"measurements" : measurements, "requestDate" : currentDate}
-
+                    console.log('Object to send: ', JSON.stringify(objectToSend));
                     res.contentType('application/json')
                     res.status(200).send(JSON.stringify(objectToSend));
                  }
