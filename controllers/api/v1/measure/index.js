@@ -198,7 +198,7 @@ module.exports = function (router) {
                         var client = utils.getCassandraConnection();
 
                         
-                        client.execute("SELECT * FROM sensors WHERE sensorid=? AND userid=? AND created_epoch>?", [sensorId, userId, offset], function (err, result) {
+                        client.execute("SELECT * FROM sensors WHERE sensorid=? AND userid=? AND created_epoch>?", [sensorId, userId, offset], {prepare : true}, function (err, result) {
                             if(err){
                                 console.log('Cassandra error: ', err);
                                 resolve(null);
