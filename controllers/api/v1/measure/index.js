@@ -101,11 +101,23 @@ module.exports = function (router) {
 /// ZMIANY
     
     router.get('/', function (req, res) {
-                
-        if (typeof req.get('user_id') === 'undefined' || typeof req.get('sensor_id') === 'undefined' ||
+        
+        console.log('user_id: ', req.get('user_id'));
+        console.log('sensor_id: ', req.get('sensor_id'));
+        console.log('offset: ', req.get('offset'));
+        
+        console.log('user_id header: ', req.header('user_id'));
+        console.log('sensor_id header: ', req.header('sensor_id'));
+        console.log('offset header: ', req.header('offset'));
+        
+        console.log('user_id param; ', req.query.user_id);
+        console.log('sensor_id param: ', req.query.sensor_id);
+        console.log('offset param: ', req.query.offset);
+                    
+        /*if (typeof req.get('user_id') === 'undefined' || typeof req.get('sensor_id') === 'undefined' ||
             typeof req.get('offset') === 'undefined') {
             res.status(400).send('One of the required fields is missing: user_id, sensor_id, offset');
-        }
+        }*/
 
         async.waterfall([
 
