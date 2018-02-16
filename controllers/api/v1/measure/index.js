@@ -200,7 +200,7 @@ module.exports = function (router) {
                         
                         client.execute("SELECT * FROM sensors WHERE sensorid=? AND userid=? AND created_epoch>?", [sensorId, userId, offset], function (err, result) {
                             if(err){
-                                console.log('Cassandra error');
+                                console.log('Cassandra error: ', err);
                                 resolve(null);
                                 db.close();
                             }
