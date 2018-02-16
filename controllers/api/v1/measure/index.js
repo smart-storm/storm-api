@@ -102,15 +102,15 @@ module.exports = function (router) {
     
     router.get('/', function (req, res) {
                 
-        if (typeof req.query.user_id === 'undefined' || typeof req.query.sensor_id === 'undefined' ||
-            typeof req.query.offset === 'undefined') {
-            res.status(400).send('One of the required fields is missing - user_id, sensor_id, offset');
+        if (typeof req.get('user_id') === 'undefined' || typeof req.get('sensor_id') === 'undefined' ||
+            typeof req.get('offset') === 'undefined') {
+            res.status(400).send('One of the required fields is missing: user_id, sensor_id, offset');
         }
 
         async.waterfall([
 
             function(callback){
-                getUserId(req.query.user_id).then(
+                getUserId(req.get('user_id')).then(
                     function (results) {
                         if(results) {
                             callback(null, results);
@@ -137,7 +137,7 @@ module.exports = function (router) {
              // Get Measurements
 
              function(userDocument, callback){
-                getMeasurements(userDocument._id, req.query.sensor_id, req.query.offset).then(function (results) {
+                getMeasurements(userDocument._id, req.get('sensor_id'), req.get('offset')).then(function (results) {
                     if(results) {
                         callback(null, results)
                     }else{
