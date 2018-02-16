@@ -192,12 +192,41 @@ module.exports = function (router) {
                     }
                     if (document) {
                         console.log('Document found');
-                        resolve(document)
+                        
+                        // begining - not sure
+                    
+                        var client = utils.getCassandraConnection();
+
+                        
+                        client.execute("SELECT * FROM sensors WHERE sensorid=? AND userid=? AND created_epoch>?", [sensorId, userId, offset], function (err, result) {
+                            if(err){
+                                console.log('Cassandra error');
+                                resolve(null);
+                                db.close();
+                            }
+                            else{
+                                var values = result.rows;
+                                console.log('Values: ', values);
+                                resolve(values);
+                                db.close();
+                            }
+                        });
+                        
+                        
+                        
+                    
+                    
+                    // end - not sure
+                        
+                        
+                        
+                        
                     }else{
                         console.log('Document not found');
                         resolve(null)
+                        db.close();
                     }
-                    db.close();
+                    
                 })
             }).catch((err) => {
                 console.log('Error connecting to: db');
