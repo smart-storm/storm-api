@@ -98,23 +98,14 @@ module.exports = function (router) {
             )
     });
 
-/// ZMIANY
     
     router.get('/', function (req, res) {
         
-        
-        console.log('user_id param; ', req.query.user_id);
-        console.log('sensor_id param: ', req.query.sensor_id);
-        console.log('offset param: ', req.query.offset);
-          
-        console.log('typeof user_id param: ', typeof req.query.user_id);
-        console.log('typeof sensor_id param: ', typeof req.query.sensor_id);
-        console.log('typeof offset param: ', typeof req.query.offset);
-        
-        /*if (typeof req.get('user_id') === 'undefined' || typeof req.get('sensor_id') === 'undefined' ||
-            typeof req.get('offset') === 'undefined') {
-            res.status(400).send('One of the required fields is missing: user_id, sensor_id, offset');
+        /*if (typeof req.query.user_id == "undefined" || typeof req.query.sensor_id == "undefined" ||
+            typeof req.query.offset == "undefined") {
+            res.status(400).send('One of required fields missing: user_id, sensor_id, offset');
         }*/
+        
 
         async.waterfall([
 
@@ -130,18 +121,6 @@ module.exports = function (router) {
                                                           )
               },
 
-             /* sensor validation possibly not needed
-             function(userDocument, callback){
-             console.log(userDocument._id)
-             getSensorId(userDocument._id, req.query.sensor_id).then(function (results) {
-                 if(results) {
-                    callback(null, results)
-                 }else{
-                    res.sendStatus(404);
-                 }
-             })
-             },
-             */
 
              // Get Measurements
 
@@ -178,13 +157,12 @@ module.exports = function (router) {
             )
     });
   
-    // find all measurements with given sensorId, userId and created_epoch greater than or equal to given offset (sorted by created_epochs ascending)
+    // find all measurements with given sensorId, userId and created_epoch greater than given offset (sorted by created_epochs descending)
     
     function getMeasurements(userId, sensorId, offset){
         return new Promise(function(resolve, reject) {                   
             var db = utils.getDbConnection().then((db) => {
-                // var mySort = { "created_epoch" : 1 };
-                // , "created_epoch" : {$gte: offset}
+                
                 console.log('Query params: ', userId.toString(), ' , ', ObjectID.createFromHexString(sensorId.toString()));
                 db.collection('sensors').find({"user_id": userId.toString(), "_id":ObjectID.createFromHexString(sensorId.toString())}).toArray(function (err, document) {
                     if (err) {
@@ -192,9 +170,7 @@ module.exports = function (router) {
                     }
                     if (document) {
                         console.log('Document found');
-                        
-                        // begining - not sure
-                    
+                       
                         var client = utils.getCassandraConnection();
                         userId = "" + userId;
                         sensorId = "" + sensorId;
@@ -214,15 +190,6 @@ module.exports = function (router) {
                             }
                         });
                         
-                        
-                        
-                    
-                    
-                    // end - not sure
-                        
-                        
-                        
-                        
                     }else{
                         console.log('Document not found');
                         resolve(null)
@@ -236,10 +203,6 @@ module.exports = function (router) {
         })
     };
     
-    
-/// KONIEC ZMIAN
-    
-
 
     function getUserId (email){
         return new Promise(function(resolve, reject) {
