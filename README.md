@@ -10,8 +10,17 @@ You will need to set the herein specified fields in your request:
 3. **desc** - a description for your measurement. This can be pretty much anything, for example: "humidity"
 4. **measure_value** - the measured value, for example 10.
 
-Sample code in python using requests library is provided here: https://gist.github.com/opiechow/e5bf3e73211f01a67f69299bbb8f82c2
+Sample code in python using requests library is provided here:
 
+```python
+import requests
+url = "http://alfa.smartstorm.io/api/v1/measure"
+data = {"user_id": "user@example.net",
+        "sensor_id": "1234567890abcdef",
+        "desc" : "some_random_description",
+        "measure_value" : "10"}
+r = requests.post(url,data)
+```
 
 ## Fetching measurements via a GET request
 Fetching of given sensor's measurement is achieved via a HTTP GET request send to the following URL address: <br>
