@@ -1,14 +1,15 @@
-
+var config = require('./config');
 var jwt = require('jsonwebtoken');
 var MongoClient = require('mongodb').MongoClient;
 
-var url = "mongodb://localhost:27017/storm-db";
-var secret='SUPER_SECRET';
+var url = config.mongoConnectionString;
+var secret= config.jwtSecret;
 
 var cassandra = require('cassandra-driver');
 var async = require('async');
 
-var cassandraClient =  new cassandra.Client({contactPoints: ['127.0.0.1'], keyspace: 'smartstorm'
+
+var cassandraClient =  new cassandra.Client({contactPoints: [config.cassandraContactPoint], keyspace: config.cassandraKeyspace
 //     protocolOptions: {
 //     port: 9043 //only for testing
 // }
