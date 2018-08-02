@@ -11,6 +11,7 @@ var HighLevelProducer = kafka.HighLevelProducer;
 var KeyedMessage = kafka.KeyedMessage;
 var Client = kafka.Client;
 var	ObjectID = require('mongodb').ObjectID;
+var config = require("../../../../config");
 
 
 module.exports = function (router) {
@@ -68,11 +69,8 @@ module.exports = function (router) {
                 
                 var kafka = require('kafka-node'),
                     HighLevelProducer = kafka.HighLevelProducer,
-                    client = new kafka.Client('localhost:2181', 'rest-service', {
-                            sessionTimeout: 300,
-                            spinDelay: 100,
-                            retries: 2
-                        }),
+                    client = new kafka.KafkaClient({kafkaHost: config.kafkaHost}),
+
                     producer = new HighLevelProducer(client),
                     payloads = [
                         { topic: 'smart_msq', messages: JSON.stringify(objectToSend), partition: 0 }
@@ -80,9 +78,11 @@ module.exports = function (router) {
 
                 producer.on('ready', function () {
                     producer.send(payloads, function (err, data) {
+                        console.log(data);
                         if(data){
                             callback(null, data)
                         }else{
+                            console.log(err);
                             res.sendStatus(500);
                         }
                     });
